@@ -4,9 +4,9 @@ from collections import deque
 
 base_coor_queue = deque([])
 target_coor_queue = deque([])
-image = cv2.imread('resources/door.jpg')
+image = cv2.imread('../resources/door.jpg')
 image = cv2.resize(image, (500, 700))
-target_image = cv2.imread('resources/slant_door.jpg')
+target_image = cv2.imread('../resources/slant_door.jpg')
 target_image = cv2.resize(target_image, (500, 700))
 GREEN_SCALAR = (0, 0, 255)
 rows,cols,channels = image.shape
@@ -27,11 +27,13 @@ def set_point(x, y, queue):
         queue.popleft()
     queue.append((x, y))
 
+
 def get_affine_array(array):
     first = [array[0][0], array[0][1]]
     second = [array[1][0], array[1][1]]
     third = [array[2][0], array[2][1]]
     return np.float32([first,second,third])
+
 
 cv2.imshow("Base Image", image)
 cv2.imshow("Target Image", target_image)

@@ -4,7 +4,6 @@ print(f"Ejercicio 2: Ecualizar la webcam monocromática en tiempo real")
 print(f"With OpenCV version: {cv2.__version__}")
 
 video_capture = cv2.VideoCapture(0)
-ret, frame = video_capture.read()
 
 while True:
     ret, frame = video_capture.read()

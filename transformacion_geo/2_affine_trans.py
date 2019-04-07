@@ -27,11 +27,13 @@ def set_point(x, y, queue):
         queue.popleft()
     queue.append((x, y))
 
+
 def get_affine_array(array):
     first = [array[0][0], array[0][1]]
     second = [array[1][0], array[1][1]]
     third = [array[2][0], array[2][1]]
     return np.float32([first,second,third])
+
 
 cv2.imshow("Base Image", image)
 cv2.imshow("Target Image", target_image)

@@ -84,6 +84,7 @@ while video.isOpened():
     processed_image = process_and_show_image(frame)
     contours, hierarchy = cv2.findContours(processed_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     detected_cars = list(map(lambda contour: car_factory.make_car(contour), contours))
+    # Hay que arreglar aca
     car_keeper.add(detected_cars)
     cars = car_keeper.cars
     # de ahora en más solo habría que usar los cars ya que son los cars trackeados, todavía no funciona bien.
@@ -91,7 +92,7 @@ while video.isOpened():
     draw_car_speeds(frame, detected_cars, speed_conversion_factor)
     cv2.imshow("6. Result", frame)
     cv2.setMouseCallback('6. Result', on_mouse)
-    if cv2.waitKey(10) & 0xFF == ord('q'):
+    if cv2.waitKey(33) & 0xFF == ord('q'):
         break
 
 video.release()

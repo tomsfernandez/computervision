@@ -9,6 +9,7 @@ from area import Area
 from car_keeper import CarKeeper
 from car_comparator import CarComparator
 from area_filter import AreaFilter
+from summary_painter import SummaryPainter
 
 car_sizes = {"CAR": Area(0, 3000), "VAN": Area(3000, 7000), "TRUCK": Area(7000, 10000)}
 GREEN_RGB = (0, 255, 0)
@@ -83,6 +84,7 @@ speed_conversion_factor = fps * metres_per_pixel_factor * (3600.0 / 1000.0) / 10
 font = cv2.FONT_HERSHEY_SIMPLEX
 print(f"Frames per second using video.get(cv2.CAP_PROP_FPS) : {fps}")
 car_keeper = CarKeeper(car_comparator)
+painter = SummaryPainter(car_colors)
 
 while video.isOpened():
     ret, frame = video.read()
@@ -90,13 +92,16 @@ while video.isOpened():
     contours, hierarchy = cv2.findContours(processed_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours = list(filter(lambda x: area_filter.applies(x), contours))
     detected_cars = list(map(lambda contour: car_factory.make_car(contour), contours))
-    # Hay que arreglar aca
     car_keeper.add(detected_cars)
     cars = car_keeper.cars
     draw_car_boxes(frame, cars)
     draw_car_speeds(frame, cars, speed_conversion_factor)
     cv2.imshow("6. Result", frame)
     cv2.setMouseCallback('6. Result', on_mouse)
+    size = 600, 600, 3
+    target = np.zeros(size, dtype=np.uint8)
+    painter.paint(frame, target, cars)
+    cv2.imshow("Target", target)
     key_pressed = cv2.waitKey(0)
     if key_pressed == ord('q'):
         break

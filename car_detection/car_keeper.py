@@ -1,8 +1,10 @@
 import cv2
 
+
 class CarKeeper:
 
     def __init__(self, car_comparator):
+        self.id_seq = 1
         self.cars = []
         self.car_comparator = car_comparator
 
@@ -12,7 +14,10 @@ class CarKeeper:
         for detected_car in existing_cars:
             similar_car = self.get_similar(detected_car)
             if similar_car is not None:
-                detected_car.update_speed(similar_car.last_location)
+                detected_car.update(similar_car)
+        for car in new_cars:
+            car.assign_id(self.id_seq)
+            self.id_seq = self.id_seq + 1
         self.cars = new_cars + existing_cars
 
     def get_similar(self, detected_car):

@@ -90,6 +90,7 @@ while video.isOpened():
     contours, hierarchy = cv2.findContours(processed_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours = list(filter(lambda x: area_filter.applies(x), contours))
     detected_cars = list(map(lambda contour: car_factory.make_car(contour), contours))
+    # Hay que arreglar aca
     car_keeper.add(detected_cars)
     cars = car_keeper.cars
     draw_car_boxes(frame, cars)

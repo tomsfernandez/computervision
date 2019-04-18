@@ -19,7 +19,7 @@ class CarFactory:
         car_area = cv2.contourArea(contour)
         position = get_counter_center(contour)
         car_type = self.get_type(car_area)
-        return Car(car_type, car_area, position, contour)
+        return Car(car_type, position, contour)
 
     def get_type(self, car_size):
         for size in self.sizes.keys():

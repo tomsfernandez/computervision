@@ -7,19 +7,23 @@ from car import Car
 from car_factory import CarFactory
 from area import Area
 from car_keeper import CarKeeper
+from car_comparator import CarComparator
+from area_filter import AreaFilter
+from summary_painter import SummaryPainter
 
-car_sizes = {"CAR": Area(0, 300000)}
+car_sizes = {"CAR": Area(0, 3000), "VAN": Area(3000, 7000), "TRUCK": Area(7000, 10000)}
 GREEN_RGB = (0, 255, 0)
-YELLOW_RGB = (255, 255, 0)
-RED_RGB = (255, 0, 0)
+YELLOW_RGB = (0, 255, 255)
+RED_RGB = (0, 0, 255)
 car_colors = {"CAR": GREEN_RGB, "VAN": YELLOW_RGB, "TRUCK": RED_RGB}
 
 
-def remove_noise(image):
-    erosion_kernel = np.ones((3, 3), np.uint8)
-    dilation_kernel = np.ones((1, 1), np.uint8)
-    img = cv2.erode(image, erosion_kernel, iterations=1)
-    return cv2.dilate(img, dilation_kernel, iterations=1)
+# def remove_noise(image):
+#     erosion_kernel = np.ones((2, 2), np.uint8)
+#     dilation_kernel = np.ones((2, 2), np.uint8)
+#     eroded = cv2.erode(image, erosion_kernel, iterations=2)
+#     dilated = cv2.dilate(eroded, dilation_kernel, iterations=2)
+#     return eroded
 
 
 def on_mouse(event, x, y, flags, param):
@@ -39,14 +43,12 @@ def draw_contour_center(contour, image):
 def process_and_show_image(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     fgbg = bgSub.apply(gray)
-    blur = cv2.GaussianBlur(fgbg, (25, 25), 0)
-    noise_reduced = remove_noise(blur)
-    _, thresh1 = cv2.threshold(noise_reduced, 100, 255, cv2.THRESH_BINARY)
-    cv2.imshow("1. Grey", gray)
-    cv2.imshow("2. Foreground", fgbg)
-    cv2.imshow("3. Blurred foreground", blur)
-    cv2.imshow("4. Eroded and dilated foreground", noise_reduced)
-    cv2.imshow("5. Thresholded", thresh1)
+    blur = cv2.GaussianBlur(fgbg, (25, 25), 25)
+    _, thresh1 = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)
+    cv2.imshow("Grey", gray)
+    cv2.imshow("Foreground", fgbg)
+    cv2.imshow("Blurred foreground", blur)
+    cv2.imshow("Thresholded", thresh1)
     return thresh1
 
 
@@ -59,40 +61,49 @@ def draw_car_boxes(image, cars):
 
 def draw_car_speeds(image, cars, speed_conversion_factor):
     for car in cars:
-        speed = car.speed * speed_conversion_factor
+        speed = int(car.speed * speed_conversion_factor)
         x, y, w, h = cv2.boundingRect(car.contour)
         color = car_colors[car.type]
-        cv2.putText(image, f"{speed} km/h", (x, y + 60), font, 0.5, color, 2, cv2.LINE_AA)
+        cv2.putText(image, f"{speed} km/h", (x, y + 60), font, 0.5, YELLOW_RGB, 2, cv2.LINE_AA)
 
 
 video = cv2.VideoCapture('../resources/cars.avi')
-bgSub = cv2.createBackgroundSubtractorMOG2(detectShadows=False)
+bgSub = cv2.createBackgroundSubtractorMOG2(history=5, varThreshold=50, detectShadows=False)
 kalman = cv2.KalmanFilter(2, 1)
 car_factory = CarFactory(car_sizes)
+car_comparator = CarComparator(0.8)
+frame_width = video.get(cv2.CAP_PROP_FRAME_WIDTH)
+frame_height = video.get(cv2.CAP_PROP_FRAME_HEIGHT)
+area_filter = AreaFilter(300, frame_height * frame_width - 1000)
 
 fps = video.get(cv2.CAP_PROP_FPS)
 sedan_approximated_length = 3.5
 sedan_pixel_length = 60
 metres_per_pixel_factor = sedan_approximated_length / sedan_approximated_length
-speed_conversion_factor = fps * metres_per_pixel_factor * (3600.0 / 1000.0)
+speed_conversion_factor = fps * metres_per_pixel_factor * (3600.0 / 1000.0) / 10
 font = cv2.FONT_HERSHEY_SIMPLEX
 print(f"Frames per second using video.get(cv2.CAP_PROP_FPS) : {fps}")
-car_keeper = CarKeeper()
+car_keeper = CarKeeper(car_comparator)
+painter = SummaryPainter(car_colors)
 
 while video.isOpened():
     ret, frame = video.read()
     processed_image = process_and_show_image(frame)
     contours, hierarchy = cv2.findContours(processed_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours = list(filter(lambda x: area_filter.applies(x), contours))
     detected_cars = list(map(lambda contour: car_factory.make_car(contour), contours))
-    # Hay que arreglar aca
     car_keeper.add(detected_cars)
     cars = car_keeper.cars
-    # de ahora en más solo habría que usar los cars ya que son los cars trackeados, todavía no funciona bien.
-    draw_car_boxes(frame, detected_cars)
-    draw_car_speeds(frame, detected_cars, speed_conversion_factor)
+    draw_car_boxes(frame, cars)
+    draw_car_speeds(frame, cars, speed_conversion_factor)
     cv2.imshow("6. Result", frame)
     cv2.setMouseCallback('6. Result', on_mouse)
-    if cv2.waitKey(33) & 0xFF == ord('q'):
+    size = 600, 600, 3
+    target = np.zeros(size, dtype=np.uint8)
+    painter.paint(frame, target, cars)
+    cv2.imshow("Target", target)
+    key_pressed = cv2.waitKey(0)
+    if key_pressed == ord('q'):
         break
 
 video.release()

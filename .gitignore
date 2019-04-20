@@ -2,3 +2,4 @@ venv
 .idea
 /.vscode/
 .DS_Store
+car_detection/__pycache__

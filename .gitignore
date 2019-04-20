@@ -3,3 +3,4 @@ venv
 /.vscode/
 .DS_Store
 car_detection/__pycache__
+resources/dataset

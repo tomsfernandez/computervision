@@ -2,8 +2,8 @@ import numpy as np
 import imutils
 import cv2
 
-detector = cv2.dnn.readNetFromCaffe("../resources/caffe_dnn/deploy.prototxt",
-                                    "../resources/caffe_dnn/res10_300x300_ssd_iter_140000.caffemodel")
+detector = cv2.dnn.readNetFromCaffe("../resources/dnn/deploy.prototxt",
+                                    "../resources/dnn/res10_300x300_ssd_iter_140000.caffemodel")
 video_capture = cv2.VideoCapture(0)
 
 while True:

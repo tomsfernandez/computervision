@@ -2,3 +2,7 @@ venv
 .idea
 /.vscode/
 car_detection/__pycache__
+semantic-segmentation/videos
+object_detection/yolo.cfg
+object_detection/yolo.weights
+object_detection/models.yml

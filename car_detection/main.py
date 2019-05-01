@@ -83,8 +83,9 @@ metres_per_pixel_factor = sedan_approximated_length / sedan_approximated_length
 speed_conversion_factor = fps * metres_per_pixel_factor * (3600.0 / 1000.0) / 10
 font = cv2.FONT_HERSHEY_SIMPLEX
 print(f"Frames per second using video.get(cv2.CAP_PROP_FPS) : {fps}")
+print(f"Should see approximately 28 cars")
 car_keeper = CarKeeper(car_comparator)
-painter = SummaryPainter(car_colors)
+painter = SummaryPainter(car_colors, 5)
 
 while video.isOpened():
     ret, frame = video.read()

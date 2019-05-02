@@ -4,4 +4,5 @@ venv
 .DS_Store
 car_detection/__pycache__
 resources/dataset
-face_recognition/output
+resources/slow.flv
+resources/vtest.avi

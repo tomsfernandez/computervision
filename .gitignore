@@ -6,6 +6,7 @@ car_detection/__pycache__
 face_recognition/output/embeddings.pickle
 face_recognition/output/le.pickle
 face_recognition/output/recognizer.pickle
+face_recognition/shape_predictor_68_face_landmarks.dat
 resources/dataset
 resources/slow.flv
 resources/vtest.avi

@@ -1,7 +1,13 @@
 venv
 .idea
 /.vscode/
+.DS_Store
 car_detection/__pycache__
+face_recognition/output/embeddings.pickle
+face_recognition/output/le.pickle
+face_recognition/output/recognizer.pickle
+face_recognition/shape_predictor_68_face_landmarks.dat
+resources
 semantic-segmentation/output
 semantic-segmentation/videos
 object_detection/yolov3.cfg

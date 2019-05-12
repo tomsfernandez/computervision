@@ -7,6 +7,11 @@ sift = cv2.xfeatures2d.SIFT_create()
 
 video_capture = cv2.VideoCapture(0)
 reference = None
+
+# Borrar
+# reference = cv2.imread('../resources/wallet.jpeg')
+# kp1, des1 = sift.detectAndCompute(reference, None)
+
 detector = cv2.ORB_create()
 cv2.namedWindow("Keypoints")
 

@@ -25,7 +25,7 @@ while True:
 
     if not flannFlag:
         currentKeypoints, currentDescriptors = detector.detectAndCompute(frame, None)
-        referenceKeypoints, referenceDescriptors = detector.detectAndCompute(frame, None)
+        referenceKeypoints, referenceDescriptors = detector.detectAndCompute(reference, None)
         bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
         matches = bf.match(currentDescriptors, referenceDescriptors)
         matches = sorted(matches, key=lambda x: x.distance)
